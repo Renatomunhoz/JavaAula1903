@@ -1,0 +1,57 @@
+package br.com.renato;
+
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
+import javax.swing.JOptionPane;
+
+public class Teste {
+
+	
+	public static void man (String[] args) {
+		
+		String nome = "";
+		String msgp = "";
+		
+		nome = JOptionPane.showInputDialog("Bem vindo, ao chat, Qual é o seu nome?");
+		
+		try {
+			
+			while (msgp != "0") {
+				msgp= JOptionPane.showInputDialog("Cha - " + nome +"Em com a mensagem. (Entre com 0 para sair)");
+				IChatAula objChat = (IChatAula) Naming.lookup("rmi://localhost:8282/chat");
+				Message msg = new Message(nome, msgp);
+				objChat.sendMessage(msg);
+				System.out.println(returnMessage(objChat.retrieveMessage()));
+			}
+			
+		
+		} catch(MalformedURLException e) {
+			e.printStackTrace();
+		
+		} catch (RemoteException e) {
+		    e.printStackTrace();	
+		
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private static String returnMessage(List<Message> lst) {
+		
+		String valor = "";
+		
+		for (Message message : lst ) {
+			
+			valor += message.getUsuario() + ":" + message.getMensagem() + "\n";
+		}
+		
+		return valor;
+	}
+}
